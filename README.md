@@ -1,6 +1,8 @@
 # Task Manager - Flask Application
 
-**Task Manager** is a web app for organizing tasks, built with Flask and PostgreSQL, featuring user registration and login, full CRUD on tasks, deadlines, priorities, and optional daily email reminders. Deploy-ready for [Render.com](https://render.com), just push and it works!
+**Task Manager** is a web app for organizing tasks, built with Flask and PostgreSQL, featuring user registration and login, full CRUD on tasks, deadlines, priorities, and optional daily email reminders.
+
+[https://task-manager-py.onrender.com](https://task-manager-py.onrender.com)
 
 ## Features
 
@@ -145,70 +147,6 @@ To enable daily email notifications:
 3. Put this in `.env` as `MAIL_PASSWORD`
 
 > Without SMTP config, the app works but won’t send emails
-
-## One-Click Deploy: Render.com
-
-### 1. Push Code to GitHub
-
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/yourusername/task-manager.git
-git push -u origin main
-```
-
-### 2. Set Up PostgreSQL on Render
-
-- Go to [Render.com](https://render.com)
-- Click “New +” → “PostgreSQL”
-- Name: e.g. `task-manager-db`, Plan: Free, Database: `task_manager`
-- Click “Create Database”
-- Render generates your `DATABASE_URL`
-
-### 3. Create Web Service on Render
-
-- Click “New +” → “Web Service”
-- Connect your GitHub repo
-- Settings:
-  - Name: `task-manager`
-  - Python Environment
-  - Build Command: `pip install -r requirements.txt`
-  - Start Command: `gunicorn app:app`
-  - Plan: Free
-
-### 4. Configure Environment Variables in Render
-
-Fill in as needed (in the Render dashboard):
-
-```
-SECRET_KEY=<your random string>
-DATABASE_URL=<provided by Render>
-MAIL_USERNAME=your-email@gmail.com
-MAIL_PASSWORD=your-gmail-app-password
-MAIL_DEFAULT_SENDER=your-email@gmail.com
-ENABLE_SCHEDULER=true
-FLASK_ENV=production
-PYTHON_VERSION=3.12.10
-APP_URL=https://your-app-name.onrender.com
-```
-
-> `DATABASE_URL` is linked automatically if you use the included `render.yaml` file.
-
-### 5. Deploy!
-
-- Click “Create Web Service”
-- Render builds/deploys automatically
-- Visit your app at `https://your-app-name.onrender.com` when live
-
-## Render.com Database Setup: No Hassle
-
-- The included `render.yaml` tells Render to:
-  - Create/render a Postgres DB for you
-  - Link it to your app service
-  - Set your `DATABASE_URL` automatically
-
-**You don’t have to configure the database manually on Render!**
 
 ## Daily Email Reminders
 
