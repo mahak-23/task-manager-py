@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Task Manager{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>My Tasks</h1>
+    <a href="{{ url_for('tasks.create_task') }}" class="btn btn-primary">+ Create New Task</a>
+</div>
+
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total }}</div>
+        <div class="stat-label">Total Tasks</div>
+    </div>
+    <div class="stat-card stat-pending">
+        <div class="stat-value">{{ stats.pending }}</div>
+        <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card stat-progress">
+        <div class="stat-value">{{ stats.in_progress }}</div>
+        <div class="stat-label">In Progress</div>
+    </div>
+    <div class="stat-card stat-completed">
+        <div class="stat-value">{{ stats.completed }}</div>
+        <div class="stat-label">Completed</div>
+    </div>
+</div>
+
+<div class="filter-container">
+    <div class="filter-buttons">
+        <a href="{{ url_for('tasks.dashboard') }}" class="filter-btn {% if not status_filter %}active{% endif %}">All</a>
+        <a href="{{ url_for('tasks.dashboard', status='pending') }}" class="filter-btn {% if status_filter == 'pending' %}active{% endif %}">Pending</a>
+        <a href="{{ url_for('tasks.dashboard', status='in_progress') }}" class="filter-btn {% if status_filter == 'in_progress' %}active{% endif %}">In Progress</a>
+        <a href="{{ url_for('tasks.dashboard', status='completed') }}" class="filter-btn {% if status_filter == 'completed' %}active{% endif %}">Completed</a>
+    </div>
+</div>
+
+{% if tasks %}
+<div class="tasks-grid">
+    {% for task in tasks %}
+    <div class="task-card task-{{ task.priority }}">
+        <div class="task-header">
+            <h3 class="task-title">{{ task.title }}</h3>
+            <div class="task-actions">
+                <a href="{{ url_for('tasks.edit_task', task_id=task.id) }}" class="task-action-link task-action-edit" title="Edit">edit</a>
+                <form method="POST" action="{{ url_for('tasks.delete_task', task_id=task.id) }}" style="display: inline;" class="task-delete-form">
+                    <button type="submit" class="task-action-link task-action-delete" title="Delete">delete</button>
+                </form>
+            </div>
+        </div>
+        
+        {% if task.description %}
+        <p class="task-description">{{ task.description }}</p>
+        {% endif %}
+        
+        <div class="task-meta">
+            <div class="task-priority priority-{{ task.priority }}">
+                <span class="priority-dot"></span>
+                {{ task.priority|title }}
+            </div>
+            {% if task.due_date %}
+            <div class="task-due-date {% if task.due_date < today %}overdue{% endif %}">
+                📅 Due: {{ task.due_date.strftime('%B %d, %Y') }}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="task-status">
+            <label class="status-select">
+                Status:
+                <select class="status-dropdown" data-task-id="{{ task.id }}">
+                    <option value="pending" {% if task.status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                    <option value="completed" {% if task.status == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+            </label>
+        </div>
+        
+        <div class="task-footer">
+            <small class="task-date">Created: {{ task.created_at.strftime('%B %d, %Y') }}</small>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>No tasks found. <a href="{{ url_for('tasks.create_task') }}">Create your first task</a> to get started!</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusDropdowns = document.querySelectorAll('.status-dropdown');
+        
+        statusDropdowns.forEach(dropdown => {
+            dropdown.addEventListener('change', function() {
+                const taskId = this.dataset.taskId;
+                const newStatus = this.value;
+                
+                fetch(`/update_status/${taskId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error updating status: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while updating the status');
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}
+
