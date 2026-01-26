@@ -5,34 +5,33 @@ from datetime import date, datetime
 
 mail = Mail()
 
-def send_daily_task_notifications():
+
+def send_daily_task_notifications(app):
     """Send daily email notifications to all users about today's tasks"""
-    try:
-        users = User.query.all()
-        today = date.today()
-        
-        for user in users:
-            # Get today's tasks ordered by priority
-            today_tasks = Task.query.filter_by(user_id=user.id).filter(
-                Task.due_date == today,
-                Task.status != 'completed'
-            ).order_by(
-                Task.priority.desc(),
-                Task.created_at.asc()
-            ).all()
-            
-            if not today_tasks:
-                continue  # Skip users with no tasks due today
-            
-            # Organize tasks by priority
-            high_priority = [t for t in today_tasks if t.priority == 'high']
-            medium_priority = [t for t in today_tasks if t.priority == 'medium']
-            low_priority = [t for t in today_tasks if t.priority == 'low']
-            
-            # Create email content
-            subject = f"📋 Your Tasks for Today - {today.strftime('%B %d, %Y')}"
-            
-            html_body = f"""
+    with app.app_context():
+        try:
+            users = User.query.all()
+            today = date.today()
+
+            for user in users:
+                # Get today's tasks ordered by priority
+                today_tasks = (
+                    Task.query.filter_by(user_id=user.id)
+                    .filter(Task.due_date == today, Task.status != "completed")
+                    .order_by(Task.priority.desc(), Task.created_at.asc())
+                    .all()
+                )
+
+                if not today_tasks:
+                    continue
+
+                # Organize tasks by priority
+                high_priority = [t for t in today_tasks if t.priority == "high"]
+                medium_priority = [t for t in today_tasks if t.priority == "medium"]
+                low_priority = [t for t in today_tasks if t.priority == "low"]
+
+                subject = f"📋 Your Tasks for Today - {today.strftime('%B %d, %Y')}"
+                html_body = f"""
             <html>
             <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
                 <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -81,41 +80,17 @@ def send_daily_task_notifications():
             </body>
             </html>
             """
-            
-            text_body = f"""
-Good Morning, {user.username}!
+                msg = Message(
+                    subject=subject,
+                    recipients=[user.email],
+                    html=html_body,
+                )
 
-Here are your tasks due today ({today.strftime('%B %d, %Y')}):
+                mail.send(msg)
+                app.logger.info(f"Email sent to {user.email}")
 
-"""
-            if high_priority:
-                text_body += f"\nHIGH PRIORITY ({len(high_priority)} tasks):\n"
-                for task in high_priority:
-                    text_body += f"- {task.title}: {task.description or 'No description'}\n"
-            
-            if medium_priority:
-                text_body += f"\nMEDIUM PRIORITY ({len(medium_priority)} tasks):\n"
-                for task in medium_priority:
-                    text_body += f"- {task.title}: {task.description or 'No description'}\n"
-            
-            if low_priority:
-                text_body += f"\nLOW PRIORITY ({len(low_priority)} tasks):\n"
-                for task in low_priority:
-                    text_body += f"- {task.title}: {task.description or 'No description'}\n"
-            
-            # Send email
-            msg = Message(
-                subject=subject,
-                recipients=[user.email],
-                html=html_body,
-                body=text_body
-            )
-            
-            mail.send(msg)
-            current_app.logger.info(f"Daily notification sent to {user.email}")
-        
-        return True
-    except Exception as e:
-        current_app.logger.error(f"Error sending daily notifications: {str(e)}")
-        return False
+            return True
 
+        except Exception as e:
+            app.logger.error(f"Email scheduler error: {str(e)}")
+            return False
