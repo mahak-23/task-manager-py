@@ -15,6 +15,34 @@
 - ✅ Responsive UI with HTML/CSS/JS
 - ✅ PostgreSQL Database
 
+
+
+## 🎬 Demo Video
+
+[▶️ Watch Demo Video](https://drive.google.com/file/d/11mSlH56AhG5mmIaj3hIuG257IqrrHfzW/view)
+
+---
+
+## 📸 Screenshots
+
+| Register                                 | Login                                |
+| --------------------------------------- | --------------------------------------- |
+| ![Register](./ScreenShots/register.png) | ![Login](./ScreenShots/login.png) |
+
+| Home Page (Dashboard)                            |
+| ------------------------------------- |
+| ![Dashboard](./ScreenShots/dashboard.png) |
+
+| Create Task                          | Edit Task                                                |
+| --------------------------------------------- | ----------------------------------------------------------- |
+| ![Create](./ScreenShots/create.png) | ![Edit](./ScreenShots/edit.png) |
+
+| Email Notification                      |
+| --------------------------------------- |
+| ![Email Notification](./ScreenShots/email.png) |
+
+---
+
 ## Tech Stack
 
 - **Backend:** Flask 3.0.0
@@ -24,6 +52,81 @@
 - **Email:** Flask-Mail (Gmail SMTP)
 - **Scheduling:** APScheduler
 - **Deployment:** Render.com
+
+## 📡 API Endpoints
+
+### 🔐 Authentication Endpoints
+| Method | Endpoint | Description |
+|------|---------|------------|
+| `GET` | `/auth/register` | Render user registration page |
+| `POST` | `/auth/register` | Register a new user |
+| `GET` | `/auth/login` | Render login page |
+| `POST` | `/auth/login` | Authenticate user credentials |
+| `GET` | `/auth/logout` | Logout the current user |
+
+---
+
+### 📝 Task Management Endpoints
+| Method | Endpoint | Description |
+|------|---------|------------|
+| `GET` | `/dashboard` | View all tasks for logged-in user |
+| `GET` | `/create` | Render create task page |
+| `POST` | `/create` | Create a new task |
+| `GET` | `/edit/<task_id>` | Render edit task page |
+| `POST` | `/edit/<task_id>` | Update task details |
+| `POST` | `/delete/<task_id>` | Delete a task |
+| `POST` | `/update_status/<task_id>` | Update task status via AJAX |
+
+> 🔒 All task-related endpoints are protected using **Flask-Login** and are accessible only to authenticated users.
+
+---
+
+### ⏰ Scheduler & Email
+| Type | Description |
+|----|------------|
+| Background Job | APScheduler runs daily at **8:00 AM** |
+| Email Trigger | Sends task reminder emails for tasks due today |
+| Manual Test | `/test-email` (development/testing only) |
+
+---
+
+## 🗄️ Database Schema
+
+### 👤 User Table
+| Column | Type | Description |
+|------|----|------------|
+| `id` | Integer (PK) | Unique user identifier |
+| `username` | String | Unique username |
+| `email` | String | Unique email address |
+| `password_hash` | String | Hashed password |
+| `created_at` | DateTime | Account creation timestamp |
+
+---
+
+### 📋 Task Table
+| Column | Type | Description |
+|------|----|------------|
+| `id` | Integer (PK) | Unique task identifier |
+| `title` | String | Task title |
+| `description` | Text | Optional task description |
+| `priority` | Enum | `high`, `medium`, `low` |
+| `status` | Enum | `pending`, `in_progress`, `completed` |
+| `due_date` | Date | Task deadline |
+| `created_at` | DateTime | Task creation time |
+| `updated_at` | DateTime | Last update time |
+| `user_id` | Integer (FK) | Associated user |
+
+---
+
+## 🔐 Security & Access Control
+
+- Passwords are securely hashed before storage
+- Users can only access **their own tasks**
+- Authentication handled using **Flask-Login**
+- Database operations use **SQLAlchemy ORM**
+
+---
+
 
 ## Project Structure
 
