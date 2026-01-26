@@ -27,19 +27,19 @@
 
 | Register                                 | Login                                |
 | --------------------------------------- | --------------------------------------- |
-| ![Register](./ScreenShots/register.png) | ![Login](./ScreenShots/login.png) |
+| ![Register](./Screenshots/register.png) | ![Login](./Screenshots/login.png) |
 
 | Home Page (Dashboard)                            |
 | ------------------------------------- |
-| ![Dashboard](./ScreenShots/dashboard.png) |
+| ![Dashboard](./Screenshots/dashboard.png) |
 
 | Create Task                          | Edit Task                                                |
 | --------------------------------------------- | ----------------------------------------------------------- |
-| ![Create](./ScreenShots/create.png) | ![Edit](./ScreenShots/edit.png) |
+| ![Create](./Screenshots/create.png) | ![Edit](./Screenshots/edit.png) |
 
 | Email Notification                      |
 | --------------------------------------- |
-| ![Email Notification](./ScreenShots/email.png) |
+| ![Email Notification](./Screenshots/email.png) |
 
 ---
 
